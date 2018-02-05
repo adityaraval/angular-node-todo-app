@@ -21,7 +21,7 @@ app.use(express.static('public'))
 
 
 //runs angular todo app
-app.get('/app',function(req,res){
+app.get('/',function(req,res){
     res.sendFile('public/index.html', {root: __dirname });
 });
 
