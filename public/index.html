@@ -56,7 +56,7 @@
             //$scope.todoList.push({text:$scope.todoInput,completed:false});
             var postTodo = JSON.stringify({title:$scope.todoTitle,text:$scope.todoText,completed:false});
             console.log(postTodo);
-            $http.post("http://localhost:3000/api/todo", postTodo)
+            $http.post("https://todo-app-angular.herokuapp.com/api/todo", postTodo)
             .then(
                 function(response){
                     // success callback
@@ -71,7 +71,7 @@
 
         $scope.removeTodo = function(todoID){
 
-            $http.delete("http://localhost:3000/api/todo/"+todoID).then(function(response) {
+            $http.delete("https://todo-app-angular.herokuapp.com/api/todo/"+todoID).then(function(response) {
                 var todoList = $scope.todoList;
                 todoList = todoList.filter(item => item._id !== todoID);
                 $scope.todoList = todoList;
@@ -81,7 +81,7 @@
         $scope.stateChanged = function (todoID,completed) {
             if(todoID){ //If it is checked
                 var completedTodo = JSON.stringify({completed:completed});
-                $http.patch("http://localhost:3000/api/todo/"+todoID, completedTodo)
+                $http.patch("https://todo-app-angular.herokuapp.com/api/todo/"+todoID, completedTodo)
             .then(
                 function(response){
                     // success callback
@@ -93,7 +93,7 @@
             }
          }
 
-        $http.get("http://localhost:3000/api/todo").then(function(response) {
+        $http.get("https://todo-app-angular.herokuapp.com/api/todo").then(function(response) {
                 $scope.todoList = response.data.data;
         });
     });
