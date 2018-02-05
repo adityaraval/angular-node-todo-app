@@ -68,7 +68,27 @@ app.patch('/api/todo/:id',(req,res)=>{
     },(error)=>{
         res.send({data:{},success:false});
     });
+});
 
+//update todo
+app.put('/api/todo/:id',(req,res)=>{
+    var id = req.params.id;
+    updateObj = {completed:req.body.completed,text:req.body.text,title:req.body.title};
+    TodoModel.findByIdAndUpdate(id,{$set:updateObj},{new:true}).then((todo)=>{
+        res.send({data:[todo],success:true}); 
+    },(error)=>{
+        res.send({data:{},success:false});
+    });
+});
+
+//get todo by id 
+app.get('/api/todo/:id',(req,res)=>{
+    var id = req.params.id;
+    TodoModel.findById(id).then((todos)=>{
+        res.send({data:[todos],success:true});
+    },(error)=>{
+        res.send({data:{},success:false});
+    });
 });
 
 app.listen(PORT,()=>{

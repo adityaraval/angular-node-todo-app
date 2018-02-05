@@ -1,67 +1,86 @@
 <!DOCTYPE html>
 <html lang="en-US">
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <link href="toggleCheckbox.css" rel="stylesheet" type="text/css">
 <body>
-
-    <div class="container">
-        <div ng-app="myAPP" ng-controller="todoCtrl">
-            <div class="row">
-                <div class="col-md-6">
-                    <h2>Add Todo :</h2>
-                    <form ng-submit="addTodo()">
-                        <div class="form-group">
-                            <label for="title">Title</label>
-                            <input type="text" value="" ng-model="todoTitle" />
-                        </div>
-                        <div class="form-group">
-                            <label for="text">Text</label>
-                            <textarea rows="3" cols="15" value="" ng-model="todoText"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <input type="submit" value="Add" class="btn btn-primary" />
-                        </div>
-                    </form>
+    <nav class="navbar navbar-light bg-light">
+            <a class="navbar-brand" href="#">
+                <img src="todo.png" width="30" height="30" class="d-inline-block align-top" alt="">
+                TodoApp
+            </a>
+    </nav><br/>
+    <div class="container" ng-app="myAPP" ng-controller="todoCtrl" ng-init="showForm=false">
+           <div class="row">
+               <div class="col-md-12 ">
+                    <table class="table table-condensed">
+                            <tr>
+                                <th>Todo</th>
+                                <th>Status</th>
+                                <th>Edit/Save</th>
+                                <th>Delete</th>
+                            </tr>
+                            <tr ng-repeat="item in todoList">
+                                <td ng-if="item._id!=editableTodo">
+                                    <h4>{{item.title}}</h4>
+                                    <p>{{item.text}}</p>
+                                </td>
+                                <td ng-if="item._id==editableTodo">
+                                        <h4><input type="text" value="item.title" ng-model="item.title" /></h4>
+                                        <h4><input type="text" value="item.text" ng-model="item.text" /></h4>
+                                </td> 
+                                <td>
+                                    <label class="switch">
+                                        <input type="checkbox" value="{{item.completed}}" ng-checked="{{item.completed}}" ng-change="stateChanged(item._id,item.completed)" ng-model="item.completed" />
+                                        <span class="slider"></span>
+                                    </label>
+                                </td>
+                                <td ng-if="item._id!=editableTodo"><button class="btn btn-sm btn-primary" ng-click="editTodo(item._id)"><i class="fa fa-edit"></i></button></td>
+                                <td ng-if="item._id==editableTodo"><button class="btn btn-sm btn-success" ng-click="updateTodo(item._id,item.title,item.text,item.completed)"><i class="fa fa-save"></i></button></td>
+                                <td><button class="btn btn-sm btn-danger" ng-click="removeTodo(item._id)"><i class="fa fa-trash"></i></button></td>
+                            </tr>
+                    </table>
+               </div>
+           </div>
+           <div class="row">
+                <div class="col-md-12">
+                        <form class="form-inline" ng-submit="addTodo()" ng-show="showForm">
+                                <div class="form-group">
+                                    <label for="title">Title : </label>
+                                    <input type="text" value="" ng-model="todoTitle" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="text">Text : </label>
+                                    <input type="text" value="" ng-model="todoText" />
+                                </div>
+                                <div class="form-group">
+                                    <input type="submit" value="Add Todo" class="btn btn-primary btn-xs" />
+                                </div>
+                            </form>
+                        <a href="#" ng-click="displayForm()">Add new Item</a>
                 </div>
-
-                <div class="col-md-6">
-                    <h2>Todo List :</h2>
-                    <ul class="list-group">
-                        <li ng-repeat="item in todoList" class="list-group-item">
-                            <h3>{{item.title}}</h3>
-                            <p>{{item.text}}</p>
-                            <label class="switch">
-                                <input type="checkbox" value="{{item.completed}}" ng-checked="{{item.completed}}" ng-change="stateChanged(item._id,item.completed)" ng-model="item.completed" />
-                                <span class="slider"></span>
-                            </label>
-                            <br/>
-                            <button class="btn btn-sm btn-danger" ng-click="removeTodo(item._id)">Remove</button>
-                            <button class="btn btn-sm btn-primary">Edit</button>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+           </div>
     </div>
 </body>
-
 <script>
     var app = angular.module('myAPP',[]);
-    
+    //var URL = "http://localhost:3000/api/todo/";
+    var URL = "https://todo-app-angular.herokuapp.com/api/todo/";
+
+
     app.controller('todoCtrl',function($scope,$http){
         //$scope.todoList = [{text:"Learn NG",completed:false},{text:"Learn Node",completed:false},{text:"Learn React",completed:false}];
 
         $scope.addTodo = function(){
             //$scope.todoList.push({text:$scope.todoInput,completed:false});
             var postTodo = JSON.stringify({title:$scope.todoTitle,text:$scope.todoText,completed:false});
-            console.log(postTodo);
-            $http.post("https://todo-app-angular.herokuapp.com/api/todo", postTodo)
+            $http.post(URL, postTodo)
             .then(
                 function(response){
                     // success callback
-                    console.log(response.data.data);
                     $scope.todoList.push(response.data.data[0]);
+                    $scope.showForm = false;
                 }, 
                 function(response){
                     // failure callback
@@ -71,17 +90,43 @@
 
         $scope.removeTodo = function(todoID){
 
-            $http.delete("https://todo-app-angular.herokuapp.com/api/todo/"+todoID).then(function(response) {
+            $http.delete(URL+todoID).then(function(response) {
                 var todoList = $scope.todoList;
                 todoList = todoList.filter(item => item._id !== todoID);
                 $scope.todoList = todoList;
+                swal("Good job!", "You deleted the todo!", "success");
             });
+        }
+
+        $scope.editTodo = function(todoID){
+            $scope.editableTodo = todoID;
+        }
+
+        $scope.updateTodo = function(todoID,title,text,completed){
+         var updateTodo = JSON.stringify({title:title,text:text,completed:completed});
+         $http.put(URL+todoID, updateTodo)
+            .then(
+                function(response){
+                    // success callback
+                    var updatedList = $scope.todoList;
+                    var foundIndex = updatedList.findIndex(x => x._id == todoID);
+                    console.log(foundIndex);
+                    $scope.todoList[foundIndex]= response.data.data[0];
+                    //updatedList[foundIndex] = updateTodo;
+                    //$scope.todoList = updatedList;
+                    $scope.editableTodo = undefined;
+                }, 
+                function(response){
+                    // failure callback
+                }
+                );   
+         
         }
 
         $scope.stateChanged = function (todoID,completed) {
             if(todoID){ //If it is checked
                 var completedTodo = JSON.stringify({completed:completed});
-                $http.patch("https://todo-app-angular.herokuapp.com/api/todo/"+todoID, completedTodo)
+                $http.patch(URL+todoID, completedTodo)
             .then(
                 function(response){
                     // success callback
@@ -93,11 +138,18 @@
             }
          }
 
-        $http.get("https://todo-app-angular.herokuapp.com/api/todo").then(function(response) {
+        $http.get(URL).then(function(response) {
                 $scope.todoList = response.data.data;
         });
+
+        $scope.displayForm = function(){
+            $scope.showForm = true;
+            $scope.todoTitle = "";
+            $scope.todoText = "";
+        }
     });
 </script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </html>
 
 
