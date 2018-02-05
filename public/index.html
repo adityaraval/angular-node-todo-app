@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link href="toggleCheckbox.css" rel="stylesheet" type="text/css">
+<body>
+
+    <div class="container">
+        <div ng-app="myAPP" ng-controller="todoCtrl">
+            <div class="row">
+                <div class="col-md-6">
+                    <h2>Add Todo :</h2>
+                    <form ng-submit="addTodo()">
+                        <div class="form-group">
+                            <label for="title">Title</label>
+                            <input type="text" value="" ng-model="todoTitle" />
+                        </div>
+                        <div class="form-group">
+                            <label for="text">Text</label>
+                            <textarea rows="3" cols="15" value="" ng-model="todoText"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Add" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-md-6">
+                    <h2>Todo List :</h2>
+                    <ul class="list-group">
+                        <li ng-repeat="item in todoList" class="list-group-item">
+                            <h3>{{item.title}}</h3>
+                            <p>{{item.text}}</p>
+                            <label class="switch">
+                                <input type="checkbox" value="{{item.completed}}" ng-checked="{{item.completed}}" ng-change="stateChanged(item._id,item.completed)" ng-model="item.completed" />
+                                <span class="slider"></span>
+                            </label>
+                            <br/>
+                            <button class="btn btn-sm btn-danger" ng-click="removeTodo(item._id)">Remove</button>
+                            <button class="btn btn-sm btn-primary">Edit</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    var app = angular.module('myAPP',[]);
+    
+    app.controller('todoCtrl',function($scope,$http){
+        //$scope.todoList = [{text:"Learn NG",completed:false},{text:"Learn Node",completed:false},{text:"Learn React",completed:false}];
+
+        $scope.addTodo = function(){
+            //$scope.todoList.push({text:$scope.todoInput,completed:false});
+            var postTodo = JSON.stringify({title:$scope.todoTitle,text:$scope.todoText,completed:false});
+            console.log(postTodo);
+            $http.post("http://localhost:3000/api/todo", postTodo)
+            .then(
+                function(response){
+                    // success callback
+                    console.log(response.data.data);
+                    $scope.todoList.push(response.data.data[0]);
+                }, 
+                function(response){
+                    // failure callback
+                }
+                );   
+        }
+
+        $scope.removeTodo = function(todoID){
+
+            $http.delete("http://localhost:3000/api/todo/"+todoID).then(function(response) {
+                var todoList = $scope.todoList;
+                todoList = todoList.filter(item => item._id !== todoID);
+                $scope.todoList = todoList;
+            });
+        }
+
+        $scope.stateChanged = function (todoID,completed) {
+            if(todoID){ //If it is checked
+                var completedTodo = JSON.stringify({completed:completed});
+                $http.patch("http://localhost:3000/api/todo/"+todoID, completedTodo)
+            .then(
+                function(response){
+                    // success callback
+                }, 
+                function(response){
+                    // failure callback
+                }
+                ); 
+            }
+         }
+
+        $http.get("http://localhost:3000/api/todo").then(function(response) {
+                $scope.todoList = response.data.data;
+        });
+    });
+</script>
+</html>
+
+
