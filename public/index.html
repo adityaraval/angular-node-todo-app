@@ -11,6 +11,7 @@
                 TodoApp
             </a>
     </nav><br/>
+
     <div class="container" ng-app="myAPP" ng-controller="todoCtrl" ng-init="showForm=false">
            <div class="row">
                <div class="col-md-12 ">
@@ -63,93 +64,9 @@
            </div>
     </div>
 </body>
-<script>
-    var app = angular.module('myAPP',[]);
-    //var URL = "http://localhost:3000/api/todo/";
-    var URL = "https://todo-app-angular.herokuapp.com/api/todo/";
 
-
-    app.controller('todoCtrl',function($scope,$http){
-        //$scope.todoList = [{text:"Learn NG",completed:false},{text:"Learn Node",completed:false},{text:"Learn React",completed:false}];
-
-        $scope.addTodo = function(){
-            //$scope.todoList.push({text:$scope.todoInput,completed:false});
-            var postTodo = JSON.stringify({title:$scope.todoTitle,text:$scope.todoText,completed:false});
-            $http.post(URL, postTodo)
-            .then(
-                function(response){
-                    // success callback
-                    $scope.todoList.push(response.data.data[0]);
-                    $scope.showForm = false;
-                }, 
-                function(response){
-                    // failure callback
-                }
-                );   
-        }
-
-        $scope.removeTodo = function(todoID){
-
-            $http.delete(URL+todoID).then(function(response) {
-                var todoList = $scope.todoList;
-                todoList = todoList.filter(item => item._id !== todoID);
-                $scope.todoList = todoList;
-                swal("Good job!", "You deleted the todo!", "success");
-            });
-        }
-
-        $scope.editTodo = function(todoID){
-            $scope.editableTodo = todoID;
-        }
-
-        $scope.updateTodo = function(todoID,title,text,completed){
-         var updateTodo = JSON.stringify({title:title,text:text,completed:completed});
-         $http.put(URL+todoID, updateTodo)
-            .then(
-                function(response){
-                    // success callback
-                    var updatedList = $scope.todoList;
-                    var foundIndex = updatedList.findIndex(x => x._id == todoID);
-                    console.log(foundIndex);
-                    $scope.todoList[foundIndex]= response.data.data[0];
-                    //updatedList[foundIndex] = updateTodo;
-                    //$scope.todoList = updatedList;
-                    $scope.editableTodo = undefined;
-                }, 
-                function(response){
-                    // failure callback
-                }
-                );   
-         
-        }
-
-        $scope.stateChanged = function (todoID,completed) {
-            if(todoID){ //If it is checked
-                var completedTodo = JSON.stringify({completed:completed});
-                $http.patch(URL+todoID, completedTodo)
-            .then(
-                function(response){
-                    // success callback
-                }, 
-                function(response){
-                    // failure callback
-                }
-                ); 
-            }
-         }
-
-        $http.get(URL).then(function(response) {
-                $scope.todoList = response.data.data;
-        });
-
-        $scope.displayForm = function(){
-            $scope.showForm = true;
-            $scope.todoTitle = "";
-            $scope.todoText = "";
-        }
-    });
-</script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="index.js"></script>
 </html>
 
 
