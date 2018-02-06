@@ -6,6 +6,11 @@
     app.controller('todoCtrl',function($scope,$http){
         //$scope.todoList = [{text:"Learn NG",completed:false},{text:"Learn Node",completed:false},{text:"Learn React",completed:false}];
 
+        $scope.appInit = function(){
+            $scope.showForm=false;
+            $scope.showProjectForm=false
+        }
+
         $scope.addTodo = function(){
             //$scope.todoList.push({text:$scope.todoInput,completed:false});
             var postTodo = JSON.stringify({title:$scope.todoTitle,text:$scope.todoText,completed:false,project_id:$scope.selectedProj});
@@ -22,6 +27,25 @@
                 }
                 );   
         }
+
+        $scope.addProject = function(){
+            //$scope.todoList.push({text:$scope.todoInput,completed:false});
+            var postProject = JSON.stringify({title:$scope.projectTitle});
+            $http.post(URL+'project/', postProject)
+            .then(
+                function(response){
+                    // success callback
+                    $scope.projectList.push(response.data.data[0]);
+                    $scope.showProjectForm = false;
+                    swal("Good job!", "New project is added to the board!", "success");
+                }, 
+                function(response){
+                    // failure callback
+                }
+                );   
+        }
+
+
 
         $scope.removeTodo = function(todoID){
 
@@ -95,17 +119,22 @@
             $scope.todoText = "";
         }
 
+        $scope.displayProjectForm = function(){
+            $scope.showProjectForm = true;
+            $scope.projectTitle = "";
+        }
+
         $scope.filterByProjects = function(projectID){
             if(projectID==='all'){
                 apiURL = URL+'todo';
                 $http.get(apiURL).then(function(response) {
-                    console.log(response.data.data);
+                    //console.log(response.data.data);
                     $scope.todoList = response.data.data;
                 });
             }else{
                 apiURL = URL+'todos/?p_id='+projectID;
                 $http.get(apiURL).then(function(response) {
-                    console.log(response.data.data);
+                    //console.log(response.data.data);
                     $scope.todoList = response.data.data;
                 });
             }

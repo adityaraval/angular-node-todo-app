@@ -12,7 +12,7 @@
             </a>
     </nav><br/>
 
-    <div class="container-fluid" ng-app="myAPP" ng-controller="todoCtrl" ng-init="showForm=false">
+    <div class="container-fluid" ng-app="myAPP" ng-controller="todoCtrl" ng-init="appInit()">
            <div class="row">
                <div class="col-md-3">
                    <h3>Filter by projects:</h3>
@@ -20,6 +20,19 @@
                         <li ng-repeat="p in projectList" class="nav-item"><a class="nav-link" href="#" ng-click="filterByProjects(p._id)">{{p.title}}</a></li>
                         <li class="nav-item"><a class="nav-link" href="#" ng-click="filterByProjects('all')">All</a></li>
                     </ul>
+                    <br/><br/>
+                    <a href="#" class="btn btn-primary" ng-click="displayProjectForm()">Add new project</a>
+                    <br/><br/>
+                    <form class="" ng-submit="addProject()" ng-show="showProjectForm">
+                        <div class="form-group">
+                            <label for="title">Project title : </label>
+                            <input type="text" value="" ng-model="projectTitle" />
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Add project" class="btn btn-primary btn-xs" />
+                        </div>
+                    </form>
+                    <br/><br/>
                </div>
                <div class="col-md-9">
                    <h3>Todo list:</h3>
@@ -53,7 +66,10 @@
                </div>
            </div>
            <div class="row">
-                <div class="col-md-12">
+               <div class="col-md-3">
+
+               </div>
+                <div class="col-md-9">
                         <form class="form-inline" ng-submit="addTodo()" ng-show="showForm">
                                 <div class="form-group">
                                     <label for="title">Title : </label>
@@ -73,7 +89,7 @@
                                     <input type="submit" value="Add Todo" class="btn btn-primary btn-xs" />
                                 </div>
                             </form>
-                        <a href="#" ng-click="displayForm()">Add new Item</a>
+                        <a href="#" class="btn btn-primary" ng-click="displayForm()">Add new todo</a>
                 </div>
            </div>
     </div>

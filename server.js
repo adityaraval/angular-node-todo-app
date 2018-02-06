@@ -118,7 +118,6 @@ app.get('/api/project',(req,res)=>{
 //get todo by id 
 app.get('/api/todos',(req,res)=>{
     var p_id = req.query.p_id;
-    console.log(p_id);
     TodoModel.find({project_id:p_id}).then((todos)=>{
         res.send({data:todos,success:true});
     },(error)=>{
