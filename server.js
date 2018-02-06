@@ -10,6 +10,8 @@ const {mongoose} = require('./config/mongoose');
 
 //models import
 const {TodoModel} = require('./model/todo');
+const {ProjectModel} = require('./model/project');
+
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -31,7 +33,8 @@ app.post('/api/todo',(req,res)=>{
     let Todo = new TodoModel({
         text:req.body.text,
         title:req.body.title,
-        completed:req.body.completed
+        completed:req.body.completed,
+        project_id:req.body.project_id
     });
     Todo.save().then((todo)=>{
         res.send({data:[todo],success:true});
@@ -42,7 +45,7 @@ app.post('/api/todo',(req,res)=>{
 
 //get all todo apis
 app.get('/api/todo',(req,res)=>{
-    TodoModel.find().then((todos)=>{
+    TodoModel.find({}).populate('project_id').then((todos)=>{
         res.send({data:todos,success:true});
     },(error)=>{
         res.send({data:{},success:false});
@@ -90,6 +93,39 @@ app.get('/api/todo/:id',(req,res)=>{
         res.send({data:{},success:false});
     });
 });
+
+//add project
+app.post('/api/project',(req,res)=>{
+    let Project = new ProjectModel({
+        title:req.body.title
+    });
+    Project.save().then((project)=>{
+        res.send({data:[project],success:true});
+    },(error)=>{
+        res.send({data:{},success:false});
+    });
+});
+
+//get all projects apis
+app.get('/api/project',(req,res)=>{
+    ProjectModel.find().then((projects)=>{
+        res.send({data:projects,success:true});
+    },(error)=>{
+        res.send({data:{},success:false});
+    });
+});
+
+//get todo by id 
+app.get('/api/todos',(req,res)=>{
+    var p_id = req.query.p_id;
+    console.log(p_id);
+    TodoModel.find({project_id:p_id}).then((todos)=>{
+        res.send({data:todos,success:true});
+    },(error)=>{
+        res.send({data:{},success:false});
+    });
+});
+
 
 app.listen(PORT,()=>{
     console.log('Server is running on port '+PORT);
