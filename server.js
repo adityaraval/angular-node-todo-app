@@ -11,7 +11,10 @@ const {mongoose} = require('./config/mongoose');
 //models import
 const {TodoModel} = require('./model/todo');
 const {ProjectModel} = require('./model/project');
+const {UserModel} = require('./model/user');
 
+//passport config
+const {passportConfig} = require('./config/passport-config');
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -125,6 +128,42 @@ app.get('/api/todos',(req,res)=>{
     });
 });
 
+
+//auth routes for login/signup
+app.post('/api/register',(req,res)=>{
+    let User = new UserModel({
+        fullname:req.body.fullname,
+        email:req.body.email,
+        password:req.body.password,
+        token:null
+    });
+
+    User.save().then((user)=>{
+        res.send({data:user,success:true});
+    },(error)=>{
+        console.log(error);
+        res.send({data:{error:error},success:false});
+    });
+});
+
+app.post('/api/login',(req,res)=>{
+    let userObj = {email:req.body.email,password:req.body.password};
+    UserModel.findOne({email:userObj.email}).exec((err1,user)=>{
+        user.comparePassword(userObj.password,(err,isMatch)=>{
+            if(isMatch){
+                user.generateToken().then((token)=>{
+                    res.send({data:user,success:true});
+                },(error)=>{
+                    res.send({data:{},success:false});
+                });
+            }
+        });    
+    });
+});
+
+app.get('/api/profile',passportConfig.authenticate('bearer', { session: false }),(req,res)=>{
+    res.send({data:req.user,success:true});
+});
 
 app.listen(PORT,()=>{
     console.log('Server is running on port '+PORT);
