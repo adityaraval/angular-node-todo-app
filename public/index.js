@@ -8,12 +8,6 @@
             url: '/home',
             template: '<h3>Welcome to todo app!</h3>'
           }
-          var loginState = {
-            name: 'login',
-            url: '/login',
-            templateUrl: 'login.html',
-            controller:'loginController'  
-          }  
         var todoState = {
           name: 'todo',
           url: '/todo',
@@ -29,8 +23,6 @@
         $stateProvider.state(homeState);
         $stateProvider.state(todoState);
         $stateProvider.state(aboutState);
-        $stateProvider.state(loginState);
-
       });
 
 
