@@ -19,14 +19,7 @@
           url: '/todo',
           templateUrl: 'todo.html',
           controller:'todoController'
-        }
-
-        var todoAddState = {
-          name: 'add',
-          parent: todoState,
-          templateUrl: 'todo.add.html'
-        }
-      
+        }      
         var aboutState = {
           name: 'about',
           url: '/about',
@@ -34,7 +27,7 @@
         }
         
         $stateProvider.state(homeState);
-        $stateProvider.state(todoState).state(todoAddState);
+        $stateProvider.state(todoState);
         $stateProvider.state(aboutState);
         $stateProvider.state(loginState);
 
