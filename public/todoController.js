@@ -1,6 +1,6 @@
-app.controller('todoController',function($scope,$http){
+app.controller('todoController',function($rootScope,$scope,$http,$state){
     //$scope.todoList = [{text:"Learn NG",completed:false},{text:"Learn Node",completed:false},{text:"Learn React",completed:false}];
-
+    console.log($rootScope,$state.current.name);
     $scope.appInit = function(){
         $scope.showForm=false;
         $scope.showProjectForm=false
